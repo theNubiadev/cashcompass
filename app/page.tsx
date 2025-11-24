@@ -278,7 +278,7 @@ export default function Home() {
               <span className="font-semibold text-lg">CashCompass</span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2024 CashCompass. Your personal expense tracking and budget management solution.
+              © {new Date().getFullYear()} CashCompass. Your personal expense tracking and budget management solution.
             </p>
           </div>
         </div>
