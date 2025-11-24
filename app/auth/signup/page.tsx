@@ -25,7 +25,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
+
 // Form validation schema
 const formSchema = z
   .object({
@@ -77,16 +78,21 @@ export default function Signup() {
       // });
 
       // if (response.ok) {
-      //   // Redirect to login or dashboard
-      //   router.push("/auth/signin");
+      //   toast.success("Account created successfully! Redirecting...");
+      //   setTimeout(() => {
+      //     router.push("/dashboard");
+      //   }, 2000);
       // }
 
-      toast.success("Account created successfully!");
-      //  redirect to dashboard or home page
-      router.push("/dashboard");
+      toast.success("Account created successfully! Redirecting...");
+      
+      // Wait 2 seconds before redirecting
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
     } catch (error) {
       console.error("Signup error:", error);
-    } finally {
+      toast.error("Failed to create account. Please try again.");
       setIsLoading(false);
     }
   };
@@ -94,14 +100,17 @@ export default function Signup() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen flex items-center justify-center p-4 dark:from-gray-900 dark:to-gray-800">
-        <Card className="w-full h-full max-w-md shadow-xl">
-          <CardHeader className="text-center space-y-2">
+      <Toaster position="top-right" richColors closeButton />
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
+        <Card className="w-full max-w-md shadow-2xl border-emerald-100 dark:border-gray-700">
+          <CardHeader className="text-center space-y-3 pb-6">
             <div className="flex items-center justify-center gap-2">
-              <Compass className="w-8 h-8 text-blue-600" />
-              <CardTitle className="text-2xl font-bold">CashCompass</CardTitle>
+              <Compass className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                CashCompass
+              </CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-base">
               Create your account to start tracking your finances
             </CardDescription>
           </CardHeader>
@@ -118,11 +127,15 @@ export default function Signup() {
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <User className="w-4 h-4" /> First Name
+                        <FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                          <User className="w-4 h-4 text-emerald-600" /> First Name
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="John" {...field} />
+                          <Input 
+                            placeholder="John" 
+                            className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -134,11 +147,15 @@ export default function Signup() {
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <User className="w-4 h-4" /> Last Name
+                        <FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                          <User className="w-4 h-4 text-emerald-600" /> Last Name
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Doe" {...field} />
+                          <Input 
+                            placeholder="Doe" 
+                            className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -151,13 +168,14 @@ export default function Signup() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex   items-center gap-2">
-                        <Mail className="w-4 h-4" /> Email Address
+                      <FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                        <Mail className="w-4 h-4 text-emerald-600" /> Email Address
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="john.doe@example.com"
+                          className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                           {...field}
                         />
                       </FormControl>
@@ -171,13 +189,14 @@ export default function Signup() {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" /> Phone Number (Optional)
+                      <FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                        <Phone className="w-4 h-4 text-emerald-600" /> Phone Number (Optional)
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="tel"
                           placeholder="+1 (555) 000-0000"
+                          className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                           {...field}
                         />
                       </FormControl>
@@ -191,9 +210,8 @@ export default function Signup() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        {" "}
-                        <Lock className="w-4 h-4" />
+                      <FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                        <Lock className="w-4 h-4 text-emerald-600" />
                         Password
                       </FormLabel>
                       <FormControl>
@@ -201,6 +219,7 @@ export default function Signup() {
                           <Input
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter your password"
+                            className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                             {...field}
                           />
                           <Button
@@ -228,8 +247,8 @@ export default function Signup() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Lock className="w-4 h-4" />
+                      <FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                        <Lock className="w-4 h-4 text-emerald-600" />
                         Confirm Password
                       </FormLabel>
                       <FormControl>
@@ -237,6 +256,7 @@ export default function Signup() {
                           <Input
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Confirm your password"
+                            className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                             {...field}
                           />
                           <Button
@@ -261,8 +281,12 @@ export default function Signup() {
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating Account..." : "Sign Up"}
+                <Button 
+                  type="submit" 
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all mt-6" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>
             </Form>
@@ -271,7 +295,7 @@ export default function Signup() {
               Already have an account?{" "}
               <Link
                 href="/auth/signin"
-                className="text-blue-600 hover:underline font-medium"
+                className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline font-medium"
               >
                 Sign In
               </Link>
