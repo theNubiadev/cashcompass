@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 export default function Home() {
   return (
     <>
@@ -35,19 +36,14 @@ export default function Home() {
               Track expenses, set budgets, and gain insights into your spending
               patterns with our intuitive expense management platform.
             </p>
-          
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/auth/signup">
-              <Button size="lg" className="w-full sm:w-auto">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            {/* <Link href="/analytics">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                View Demo
-              </Button>
-            </Link> */}
+              <Link href="/auth/signup">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -57,11 +53,13 @@ export default function Home() {
           <Card className="border-2 hover:border-primary transition-colors">
             <CardHeader>
               <div className="flex items-center gap-2">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <DollarSign className="h-6 w-6  text-black" />
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <DollarSign className="h-6 w-6  text-black" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">
+                  Expense Tracking
+                </CardTitle>
               </div>
-              <CardTitle className="-mt-4 font-bold">Expense Tracking</CardTitle>
-            </div>
               <CardDescription>
                 Easily log and categorize your daily expenses to keep track of
                 where your money goes.
@@ -168,7 +166,21 @@ export default function Home() {
             </CardHeader>
           </Card>
         </div>
-
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 px-4 pb-16">
+          <Card className="rounded">
+            <Image src="https://www.shutterstock.com/image-photo/beautiful-asian-businesswoman-insert-coins-pin-2475189411?trackingId=b2a988f9-2736-4c2d-aa3b-7a4d307639ea" alt="" className="" />
+          </Card>
+          <Card className="rounded">
+            <Image src="https://www.shutterstock.com/image-photo/pile-coins-beside-piggy-bank-calculator-2341795621?trackingId=b2a988f9-2736-4c2d-aa3b-7a4d307639ea" alt="" className="" />
+          </Card>
+          <Card className="rounded">
+            <Image src="https://www.shutterstock.com/image-photo/serious-young-man-sit-workplace-desk-2609818593?trackingId=360688ef-f3c4-4a5b-ab71-50010b3ac8f4" alt="" className="" />
+          </Card>
+          {/* https://www.shutterstock.com/image-photo/side-view-confident-woman-calculates-utility-2457065669?trackingId=360688ef-f3c4-4a5b-ab71-50010b3ac8f4 */}
+          {/* https://www.shutterstock.com/image-photo/woman-writing-list-debt-on-notebook-2021907254?trackingId=360688ef-f3c4-4a5b-ab71-50010b3ac8f4 */}
+          {/* https://www.shutterstock.com/image-photo/minded-man-viewing-receipts-supermarket-tracking-1980000383?trackingId=360688ef-f3c4-4a5b-ab71-50010b3ac8f4 */}
+        </div>
+        {/* carousel avatar badge dropdown-menu table tabs spinner popover accordion */}
         {/* CTA  */}
         <Card className="bg-primary text-primary-foreground border-0">
           <CardContent className="pt-6">
