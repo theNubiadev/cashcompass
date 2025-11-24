@@ -194,7 +194,7 @@ export default function Home() {
           <Card className="overflow-hidden border-2 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
             <div className="relative h-64">
               <Image 
-                src="https://images.unsplash.com/photo-1554224311-beee4f8796d7?w=800&h=600&fit=crop" 
+                src="https://www.shutterstock.com/image-photo/minded-man-viewing-receipts-supermarket-tracking-1980000383?trackingId=360688ef-f3c4-4a5b-ab71-50010b3ac8f4" 
                 alt="Financial planning" 
                 fill
                 className="object-cover"
