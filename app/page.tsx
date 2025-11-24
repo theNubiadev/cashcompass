@@ -1,5 +1,4 @@
 import {
-  Wallet,
   DollarSign,
   Target,
   BarChart,

@@ -44,10 +44,10 @@ export default function Signin() {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
     setIsLoading(true);
     try {
-      console.log("Form data", data);
+      console.log("Form data");
 
       // TODO: Replace with actual API call
       // const response = await fetch("/api/auth/signin", {
@@ -55,13 +55,13 @@ export default function Signin() {
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify(data),
       // });
-      // 
+      //
       // if (!response.ok) {
       //   throw new Error("Sign in failed");
       // }
 
       toast.success("Signed in successfully! Redirecting...");
-      
+
       // Wait 2 seconds before redirecting
       setTimeout(() => {
         router.push("/dashboard");
@@ -165,9 +165,9 @@ export default function Signin() {
                   </Link>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all" 
+                <Button
+                  type="submit"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all"
                   disabled={isLoading}
                 >
                   {isLoading ? "Signing in..." : "Sign In"}

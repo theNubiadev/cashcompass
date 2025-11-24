@@ -17,7 +17,7 @@ export function RecentExpenses() {
 
   useState(() => {
     setTimeout(() => setIsLoading(false), 1200);
-  }, []);
+  }, );
 
   if (isLoading) {
     return (

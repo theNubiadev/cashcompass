@@ -64,11 +64,11 @@ export default function Signup() {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
     setIsLoading(true);
     try {
       // TODO: Replace with your actual API call
-      console.log("Form data:", data);
+      console.log("Form data:", );
 
       // Example API call:
       // const response = await fetch("/api/auth/signup", {
