@@ -1,103 +1,208 @@
-import Image from "next/image";
-
+import {
+  Wallet,
+  DollarSign,
+  Target,
+  BarChart,
+  TrendingUp,
+  Zap,
+  Shield,
+  ArrowRight,
+} from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardDescription,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      <div className="min-h-screen  font-poppins">
+        {/* Hero section */}
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <div className="flex items-center justify-center mb-6 gap-2">
+              <Wallet className="w-10 h-10 text-black" />
+              <h1 className="text-5xl md:text-6xl font-bold">CashCompass</h1>
+            </div>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
+              Your personal finance companion for smarter spending decisions
+            </p>
+            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+              Track expenses, set budgets, and gain insights into your spending
+              patterns with our intuitive expense management platform.
+            </p>
+          
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/auth/signup">
+              <Button size="lg" className="w-full sm:w-auto">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            {/* <Link href="/analytics">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                View Demo
+              </Button>
+            </Link> */}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Features Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 px-4 pb-16">
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                <DollarSign className="h-6 w-6  text-black" />
+              </div>
+              <CardTitle className="-mt-4 font-bold">Expense Tracking</CardTitle>
+            </div>
+              <CardDescription>
+                Easily log and categorize your daily expenses to keep track of
+                where your money goes.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader>
+              <div className="flex gap-2 items-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Target className="h-6 w-6 text-black" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">
+                  Budget Management
+                </CardTitle>
+              </div>
+              <CardDescription>
+                Set monthly budgets for different categories and monitor your
+                spending against them.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader>
+              <div className="flex gap-2 items-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <BarChart className="h-6 w-6 text-black" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">
+                  Spending Insights
+                </CardTitle>
+              </div>
+              <CardDescription>
+                Get detailed reports and visualizations to understand your
+                spending habits better.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:border-black transition-colors">
+            <CardHeader>
+              <div className="flex gap-2 items-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">
+                  Multi-Device Sync
+                </CardTitle>
+              </div>
+              <CardDescription>
+                Access your financial data across all your devices with seamless
+                synchronization.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader>
+              <div className="flex gap-2 items-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">
+                  Real-time Dashboard
+                </CardTitle>
+              </div>
+              <CardDescription>
+                Get an overview of your financial health at a glance with our
+                comprehensive dashboard.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader>
+              <div className="flex gap-2 items-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">Quick & Easy</CardTitle>
+              </div>
+              <CardDescription>
+                Add expenses in seconds with smart categorization and date
+                selection. No complicated setup required.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader>
+              <div className="flex gap-2 items-center">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle className="-mt-4 font-bold">
+                  Secure & Private
+                </CardTitle>
+              </div>
+              <CardDescription>
+                Your financial data is stored locally on your device. Complete
+                privacy and control over your information.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* CTA  */}
+        <Card className="bg-primary text-primary-foreground border-0">
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <h2 className="text-3xl font-bold mb-4">
+                Ready to take control of your finances?
+              </h2>
+              <p className="text-lg mb-8 opacity-90">
+                Start tracking your expenses and managing your budgets today.
+              </p>
+              <Link href="/dashboard">
+                <Button size="lg" variant="secondary">
+                  Launch Dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        <footer className="border-t mt-16">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Wallet className="h-5 w-5" />
+                <span className="font-semibold">CashCompass</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Your personal expense tracking and budget management solution
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
