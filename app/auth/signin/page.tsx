@@ -66,7 +66,7 @@ export default function Signin() {
 
       toast.success("Signed in successfully! Redirecting...");
       // small delay so the toast is visible
-      setTimeout(() => router.push("/dashboard"), 800);
+      setTimeout(() => router.push("/onboarding"), 800);
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error("Failed to sign in. Please check your credentials.");
