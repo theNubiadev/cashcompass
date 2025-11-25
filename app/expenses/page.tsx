@@ -144,12 +144,12 @@ export default function Expenses({ searchQuery = "", filterCategory = "" }) {
     return matchesSearch && matchesCategory;
   });
 
-  const handleEdit = (id) => {
+  const handleEdit = (id: string) => {
     console.log("Edit expense:", id);
     toast.success("Edit expense");
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string) => {
     console.log("Delete expense:", id);
     toast.error("Delete expense")
   };
