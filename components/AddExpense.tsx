@@ -28,6 +28,10 @@ export function AddExpenseModal({ open, onOpenChange }) {
     description: "",
     date: new Date().toISOString().split('T')[0],
   });
+
+  // NEW: File State
+  const [file, setFile] = useState(null);   
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -35,30 +39,31 @@ export function AddExpenseModal({ open, onOpenChange }) {
     setIsSubmitting(true);
 
     try {
-      // TODO: Replace with actual API call
       console.log("Expense data:", formData);
-      
-      // Example API call:
-      // const response = await fetch('/api/expenses', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData),
-      // });
-      // if (!response.ok) throw new Error('Failed to add expense');
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      console.log("Uploaded file:", file);
+
+      // EXAMPLE: preparing data for an API endpoint
+      // const uploadData = new FormData();
+      // uploadData.append("amount", formData.amount);
+      // uploadData.append("category", formData.category);
+      // uploadData.append("description", formData.description);
+      // uploadData.append("date", formData.date);
+      // if (file) uploadData.append("file", file);
+
+      // await fetch("/api/expenses", { method: "POST", body: uploadData });
+
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate
+
       toast.success("Expense added successfully!");
       onOpenChange(false);
-      
-      // Reset form
+
       setFormData({
         amount: "",
         category: "",
         description: "",
         date: new Date().toISOString().split('T')[0],
       });
+      setFile(null); // reset file
     } catch (error) {
       console.error("Error adding expense:", error);
       toast.error("Failed to add expense. Please try again.");
@@ -78,6 +83,8 @@ export function AddExpenseModal({ open, onOpenChange }) {
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+
+          {/* Amount */}
           <div className="space-y-2">
             <Label htmlFor="amount">Amount ($)</Label>
             <Input
@@ -87,11 +94,11 @@ export function AddExpenseModal({ open, onOpenChange }) {
               placeholder="0.00"
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
               required
             />
           </div>
 
+          {/* Category */}
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <Select
@@ -99,7 +106,7 @@ export function AddExpenseModal({ open, onOpenChange }) {
               onValueChange={(value) => setFormData({ ...formData, category: value })}
               required
             >
-              <SelectTrigger className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500">
+              <SelectTrigger>
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
@@ -112,6 +119,7 @@ export function AddExpenseModal({ open, onOpenChange }) {
             </Select>
           </div>
 
+          {/* Date */}
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
             <Input
@@ -119,11 +127,11 @@ export function AddExpenseModal({ open, onOpenChange }) {
               type="date"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
               required
             />
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -131,18 +139,35 @@ export function AddExpenseModal({ open, onOpenChange }) {
               placeholder="What did you spend on?"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 resize-none"
               rows={3}
               required
             />
           </div>
 
+          {/* NEW — File Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="receipt">Upload Receipt (Image or PDF)</Label>
+            <Input
+              id="receipt"
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="cursor-pointer"
+            />
+            {file && (
+              <p className="text-sm text-gray-600">
+                Selected: <span className="font-medium">{file.name}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Buttons */}
           <div className="flex gap-3 pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 border-gray-300"
+              className="flex-1"
               disabled={isSubmitting}
             >
               Cancel
