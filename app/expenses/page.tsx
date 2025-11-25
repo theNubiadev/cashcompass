@@ -1,8 +1,7 @@
 "use client";
 
 import { Navigation } from "@/components/Navbar";
-import { RecentExpenses } from "@/components/RecentExpense";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -20,227 +19,375 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  Calendar,
-  CreditCard,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Filter } from "lucide-react";
-import { toast } from "sonner";
-// Mock data - replace with actual API call
-const mockExpenses = [
-  {
-    id: 1,
-    description: "Grocery shopping at Whole Foods",
-    category: "Food & Dining",
-    amount: 145.5,
-    date: "2024-11-23",
-    paymentMethod: "Credit Card",
-    status: "completed",
-  },
-  {
-    id: 2,
-    description: "Uber ride to airport",
-    category: "Transportation",
-    amount: 45.0,
-    date: "2024-11-23",
-    paymentMethod: "Debit Card",
-    status: "completed",
-  },
-  {
-    id: 3,
-    description: "Netflix subscription",
-    category: "Entertainment",
-    amount: 15.99,
-    date: "2024-11-22",
-    paymentMethod: "Credit Card",
-    status: "pending",
-  },
-  {
-    id: 4,
-    description: "Electricity bill",
-    category: "Bills & Utilities",
-    amount: 89.5,
-    date: "2024-11-21",
-    paymentMethod: "Bank Transfer",
-    status: "completed",
-  },
-  {
-    id: 5,
-    description: "Coffee at Starbucks",
-    category: "Food & Dining",
-    amount: 6.75,
-    date: "2024-11-21",
-    paymentMethod: "Cash",
-    status: "completed",
-  },
-  {
-    id: 6,
-    description: "Online course - Udemy",
-    category: "Education",
-    amount: 49.99,
-    date: "2024-11-20",
-    paymentMethod: "Credit Card",
-    status: "completed",
-  },
-  {
-    id: 7,
-    description: "New running shoes",
-    category: "Shopping",
-    amount: 129.99,
-    date: "2024-11-19",
-    paymentMethod: "Debit Card",
-    status: "completed",
-  },
-  {
-    id: 8,
-    description: "Doctor appointment",
-    category: "Healthcare",
-    amount: 75.0,
-    date: "2024-11-18",
-    paymentMethod: "Cash",
-    status: "completed",
-  },
-];
-const categoryColors = {
-  "Food & Dining":
-    "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
-  Transportation:
-    "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  Entertainment:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
-  "Bills & Utilities":
-    "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-  Education:
-    "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
-  Shopping: "bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400",
-  Healthcare:
-    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Download,
+  FileText,
+  Calendar,
+  Trash2,
+  Search,
+  Filter,
+} from "lucide-react";
+import { toast, Toaster } from "sonner";
+
+const CATEGORIES = ["Groceries", "Rent", "Entertainment", "Utilities", "Transportation", "Healthcare", "Other"];
+
+type Expense = {
+  id: string;
+  description: string;
+  amount: number;
+  category: string;
+  date: string;
+  createdAt: string;
+};
+
+const categoryColors: Record<string, string> = {
+  Groceries: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+  Rent: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  Entertainment: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+  Utilities: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+  Transportation: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
+  Healthcare: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
   Other: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
 };
 
-export default function Expenses({ searchQuery = "", filterCategory = "" }) {
-  const [isLoading, setIsLoading] = useState(false);
+export default function ExpensesPage() {
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [sortBy, setSortBy] = useState("date-desc");
 
-  //  Filter expesnes based on search and category
-  const filteredExpenses = mockExpenses.filter((expense) => {
-    const matchesSearch = expense.description
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    expense.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      !filterCategory || expense.category === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
-  const handleEdit = (id: string) => {
-    console.log("Edit expense:", id);
-    toast.success("Edit expense");
+  const fetchExpenses = async () => {
+    try {
+      const res = await fetch("/api/expenses", { credentials: "same-origin" });
+      if (res.ok) {
+        const data = await res.json();
+        setExpenses(data.expenses || []);
+      } else {
+        toast.error("Failed to load expenses");
+      }
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+      toast.error("Error loading expenses");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    console.log("Delete expense:", id);
-    toast.error("Delete expense")
+  const applyFiltersAndSort = () => {
+    let result = [...expenses];
+
+    // Search filter
+    if (searchQuery) {
+      result = result.filter((expense) =>
+        expense.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Category filter (skip if "all-categories" or empty)
+    if (filterCategory && filterCategory !== "all-categories") {
+      result = result.filter((expense) => expense.category === filterCategory);
+    }
+
+    // Sort
+    result = result.sort((a, b) => {
+      switch (sortBy) {
+        case "date-desc":
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        case "date-asc":
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
+        case "amount-desc":
+          return b.amount - a.amount;
+        case "amount-asc":
+          return a.amount - b.amount;
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredExpenses(result);
   };
 
-  if (isLoading) {
-    return (
-      <Card className="border-2 border-gray-200 dark:border-gray-700">
-        <CardHeader>
-          <CardTitle>All Expenses</CardTitle>
-          <CardDescription>Complete list of your transactions</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div
-                key={i}
-                className="h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
-              ></div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  useEffect(() => {
+    applyFiltersAndSort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expenses, searchQuery, filterCategory, sortBy]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this expense?")) return;
+
+    try {
+      const res = await fetch(`/api/expenses/${id}`, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+
+      if (res.ok) {
+        toast.success("Expense deleted");
+        setExpenses(expenses.filter((e) => e.id !== id));
+      } else {
+        toast.error("Failed to delete expense");
+      }
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      toast.error("Error deleting expense");
+    }
+  };
+
+  const exportToCSV = () => {
+    if (filteredExpenses.length === 0) {
+      toast.error("No expenses to export");
+      return;
+    }
+
+    const headers = ["Description", "Category", "Amount", "Date"];
+    const rows = filteredExpenses.map((expense) => [
+      expense.description,
+      expense.category,
+      expense.amount.toFixed(2),
+      new Date(expense.date).toLocaleDateString(),
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", `expenses-${new Date().toISOString().split("T")[0]}.csv`);
+    link.style.visibility = "hidden";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success("Expenses exported to CSV");
+  };
+
+  const exportToJSON = () => {
+    if (filteredExpenses.length === 0) {
+      toast.error("No expenses to export");
+      return;
+    }
+
+    const data = {
+      exportDate: new Date().toISOString(),
+      totalExpenses: filteredExpenses.length,
+      totalAmount: filteredExpenses.reduce((sum, e) => sum + e.amount, 0),
+      expenses: filteredExpenses.map((e) => ({
+        description: e.description,
+        category: e.category,
+        amount: parseFloat(e.amount.toFixed(2)),
+        date: e.date,
+      })),
+    };
+
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", `expenses-${new Date().toISOString().split("T")[0]}.json`);
+    link.style.visibility = "hidden";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success("Expenses exported to JSON");
+  };
+
+  const totalAmount = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 ">
+      <Toaster position="top-right" richColors closeButton />
+
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto p-4 md:p-6 space-y-6">
           {/* Header */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center">
-            <div>
-              <h1 className="text-3xl text-emerald-600 md:text-4xl font-bold dark:text-white mb-2">
-                Check your expenses
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Overview of your expenses in a tabular form{" "}
-              </p>
-            </div>
-            <div className="flex">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-emerald-600 rounded  "
-              >
-                <Filter className="w-4 h-4 " />
-                <span>Filter view</span>
-              </Button>
-
-              <Input placeholder="Search" className="text-emerald-600 " />
-            </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              All Expenses
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              View and manage all your expenses in one place
+            </p>
           </div>
 
-          {/* Main Content */}
-          <RecentExpenses />
-
-          <Card className="border-2 border-gray-200 dark:border-gray-700">
+          {/* Filters & Export */}
+          <Card>
             <CardHeader>
-              <CardTitle>All Expenses</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filters & Export
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                {/* Search */}
+                <div>
+                  <Label htmlFor="search" className="text-sm mb-2 block">
+                    Search
+                  </Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                    <Input
+                      id="search"
+                      placeholder="Search description..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <Label htmlFor="category" className="text-sm mb-2 block">
+                    Category
+                  </Label>
+                  <Select value={filterCategory} onValueChange={setFilterCategory}>
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="All categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all-categories">All categories</SelectItem>
+                      {CATEGORIES.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Sort By */}
+                <div>
+                  <Label htmlFor="sort" className="text-sm mb-2 block">
+                    Sort By
+                  </Label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger id="sort">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date-desc">Newest First</SelectItem>
+                      <SelectItem value="date-asc">Oldest First</SelectItem>
+                      <SelectItem value="amount-desc">Highest Amount</SelectItem>
+                      <SelectItem value="amount-asc">Lowest Amount</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Export Buttons */}
+                <div className="flex gap-2 items-end">
+                  <Button
+                    onClick={exportToCSV}
+                    variant="outline"
+                    className="flex-1 gap-2"
+                    disabled={isLoading || filteredExpenses.length === 0}
+                  >
+                    <Download className="h-4 w-4" />
+                    CSV
+                  </Button>
+                  <Button
+                    onClick={exportToJSON}
+                    variant="outline"
+                    className="flex-1 gap-2"
+                    disabled={isLoading || filteredExpenses.length === 0}
+                  >
+                    <FileText className="h-4 w-4" />
+                    JSON
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Summary Stats */}
+          {filteredExpenses.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Expenses</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {filteredExpenses.length}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Amount</div>
+                  <div className="text-2xl font-bold text-emerald-600">#{totalAmount.toFixed(2)}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Average Amount</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    #{(totalAmount / filteredExpenses.length).toFixed(2)}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Expenses Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Expense List</CardTitle>
               <CardDescription>
-                {filteredExpenses.length} transaction
-                {filteredExpenses.length !== 1 ? "s" : ""} found
+                {filteredExpenses.length} expense{filteredExpenses.length !== 1 ? "s" : ""} found
               </CardDescription>
-              <CardContent>
-                <div className="rounded-md border border-gray-200 dark:border-gray-700">
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
+                    ></div>
+                  ))}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50 dark:bg-gray-800">
-                        <TableHead className="font-semibold">
-                          Description
-                        </TableHead>
-                        <TableHead className="font-semibold">
-                          Category
-                        </TableHead>
-                        <TableHead className="font-semibold">Amount</TableHead>
+                        <TableHead className="font-semibold">Description</TableHead>
+                        <TableHead className="font-semibold">Category</TableHead>
+                        <TableHead className="font-semibold text-right">Amount</TableHead>
                         <TableHead className="font-semibold">Date</TableHead>
-                        <TableHead className="font-semibold">
-                          Payment Method
-                        </TableHead>
-                        <TableHead className="font-semibold">Status</TableHead>
-                        <TableHead className="text-right font-semibold">
-                          Actions
-                        </TableHead>
+                        <TableHead className="text-right font-semibold">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredExpenses.length === 0 ? (
                         <TableRow>
                           <TableCell
-                            colSpan={7}
+                            colSpan={5}
                             className="text-center py-8 text-gray-500"
                           >
                             No expenses found. Try adjusting your filters.
@@ -252,80 +399,32 @@ export default function Expenses({ searchQuery = "", filterCategory = "" }) {
                             key={expense.id}
                             className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                           >
-                            <TableCell className="font-medium">
-                              {expense.description}
-                            </TableCell>
+                            <TableCell className="font-medium">{expense.description}</TableCell>
                             <TableCell>
                               <Badge
-                                variant="secondary"
-                                className={`${
-                                  categoryColors[expense.category]
-                                } font-medium`}
+                                className={`${categoryColors[expense.category] || categoryColors.Other}`}
                               >
                                 {expense.category}
                               </Badge>
                             </TableCell>
-                            <TableCell className="font-semibold text-gray-900 dark:text-white">
-                              ${expense.amount.toFixed(2)}
+                            <TableCell className="text-right font-semibold text-gray-900 dark:text-white">
+                              #{expense.amount.toFixed(2)}
                             </TableCell>
                             <TableCell>
-                              <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                <Calendar className="h-3 w-3" />
-                                {expense.date}
+                              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                <Calendar className="h-4 w-4" />
+                                {new Date(expense.date).toLocaleDateString()}
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                <CreditCard className="h-3 w-3" />
-                                {expense.paymentMethod}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  expense.status === "completed"
-                                    ? "default"
-                                    : "secondary"
-                                }
-                                className={
-                                  expense.status === "completed"
-                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
-                                    : "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                                }
-                              >
-                                {expense.status}
-                              </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    onClick={() => handleEdit(expense.id)}
-                                    className="cursor-pointer text-green-600"
-                                  >
-                                    <Pencil className="mr-2 h-4 w-4 text-green-600  " />
-                                    Edit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => handleDelete(expense.id)}
-                                    className="cursor-pointer text-red-600 focus:text-red-600"
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDelete(expense.id)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))
@@ -333,8 +432,8 @@ export default function Expenses({ searchQuery = "", filterCategory = "" }) {
                     </TableBody>
                   </Table>
                 </div>
-              </CardContent>
-            </CardHeader>
+              )}
+            </CardContent>
           </Card>
         </div>
       </div>

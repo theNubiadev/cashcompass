@@ -64,35 +64,52 @@ export default function Signup() {
     },
   });
 
-  const onSubmit = async () => {
+  type SignupValues = z.infer<typeof formSchema>;
+
+  const extractErrorMessage = (data: unknown) => {
+    if (!data) return "Registration failed";
+    if (typeof data === "string") return data;
+    if (data?.error && typeof data.error === "string") return data.error;
+    if (data?.error?.message) return data.error.message;
+
+    const messages: string[] = [];
+    const walk = (obj: unknown) => {
+      if (!obj) return;
+      if (Array.isArray(obj)) return obj.forEach(walk);
+      if (typeof obj === "object") {
+        if (obj._errors && obj._errors.length) messages.push(...obj._errors);
+        Object.values(obj).forEach(walk);
+      }
+    };
+    walk(data?.error);
+    return messages[0] || "Registration failed";
+  };
+
+  const onSubmit = async (values: SignupValues) => {
     setIsLoading(true);
     try {
-      // TODO: Replace with your actual API call
-      console.log("Form data:", );
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
 
-      // Example API call:
-      // const response = await fetch("/api/auth/signup", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(data),
-      // });
+      const data = await res.json().catch(() => ({}));
 
-      // if (response.ok) {
-      //   toast.success("Account created successfully! Redirecting...");
-      //   setTimeout(() => {
-      //     router.push("/dashboard");
-      //   }, 2000);
-      // }
+      if (!res.ok) {
+        const msg = extractErrorMessage(data);
+        toast.error(msg);
+        setIsLoading(false);
+        return;
+      }
 
-      toast.success("Account created successfully! Redirecting...");
-      
-      // Wait 2 seconds before redirecting
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
+      toast.success("Account created successfully! Redirecting to sign in...");
+      form.reset();
+      setTimeout(() => router.push("/auth/signin"), 5000);
     } catch (error) {
       console.error("Signup error:", error);
       toast.error("Failed to create account. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };
