@@ -44,31 +44,33 @@ export default function Signin() {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: { email: string; password: string }) => {
     setIsLoading(true);
     try {
-      console.log("Form data");
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+        credentials: "same-origin",
+      });
 
-      // TODO: Replace with actual API call
-      // const response = await fetch("/api/auth/signin", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(data),
-      // });
-      //
-      // if (!response.ok) {
-      //   throw new Error("Sign in failed");
-      // }
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        // Try to extract a usable error message
+        const msg = data?.error || (typeof data === "string" ? data : "Sign in failed");
+        toast.error(msg);
+        setIsLoading(false);
+        return;
+      }
 
       toast.success("Signed in successfully! Redirecting...");
-
-      // Wait 2 seconds before redirecting
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
+      // small delay so the toast is visible
+      setTimeout(() => router.push("/dashboard"), 800);
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error("Failed to sign in. Please check your credentials.");
+    } finally {
       setIsLoading(false);
     }
   };

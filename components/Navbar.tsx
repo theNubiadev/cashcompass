@@ -1,10 +1,12 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Receipt, Target, BarChart3, Compass, LogIn, UserPlus, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -13,17 +15,50 @@ const navItems = [
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
+type User = { id: string; firstName: string; lastName: string; email: string } | null;
+
 export function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   
-  // TODO: Replace with actual authentication check
-  // Example: const isAuthenticated = !!session?.user;
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleLogout = () => {
-    // TODO: Implement actual logout logic
-    console.log('Logging out...');
-    setIsAuthenticated(false);
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/me", { credentials: "same-origin" });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Auth check data:", data);
+          setIsAuthenticated(!!data.user);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        setIsAuthenticated(false);
+      } finally {
+        // Auth check complete
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+      if (res.ok) {
+        toast.success("Logged out successfully");
+        setIsAuthenticated(false);
+        router.push("/auth/signin");
+      } else {
+        toast.error("Failed to logout");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout");
+    }
   };
 
   return (
@@ -33,7 +68,7 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-xl group">
             <Compass className="h-7 w-7 text-emerald-600 dark:text-emerald-400 group-hover:rotate-12 transition-transform" />
-            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               CashCompass
             </span>
           </Link>
