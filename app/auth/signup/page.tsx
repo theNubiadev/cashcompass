@@ -66,22 +66,30 @@ export default function Signup() {
 
   type SignupValues = z.infer<typeof formSchema>;
 
-  const extractErrorMessage = (data: unknown) => {
+  const extractErrorMessage = (data: unknown): string => {
     if (!data) return "Registration failed";
     if (typeof data === "string") return data;
-    if (data?.error && typeof data.error === "string") return data.error;
-    if (data?.error?.message) return data.error.message;
+    
+    const obj = data as Record<string, unknown>;
+    if (obj?.error && typeof obj.error === "string") return obj.error;
+    if (obj?.error && typeof obj.error === "object" && obj.error !== null) {
+      const errorObj = obj.error as Record<string, unknown>;
+      if (errorObj?.message) return String(errorObj.message);
+    }
 
     const messages: string[] = [];
-    const walk = (obj: unknown) => {
-      if (!obj) return;
-      if (Array.isArray(obj)) return obj.forEach(walk);
-      if (typeof obj === "object") {
-        if (obj._errors && obj._errors.length) messages.push(...obj._errors);
-        Object.values(obj).forEach(walk);
+    const walk = (item: unknown) => {
+      if (!item) return;
+      if (Array.isArray(item)) return item.forEach(walk);
+      if (typeof item === "object") {
+        const record = item as Record<string, unknown>;
+        if (Array.isArray(record._errors) && record._errors.length) {
+          messages.push(...record._errors.map(String));
+        }
+        Object.values(record).forEach(walk);
       }
     };
-    walk(data?.error);
+    walk(obj?.error);
     return messages[0] || "Registration failed";
   };
 
@@ -118,12 +126,12 @@ export default function Signup() {
     <>
       <Navigation />
       <Toaster position="top-right" richColors closeButton />
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
         <Card className="w-full max-w-md shadow-2xl border-emerald-100 dark:border-gray-700">
           <CardHeader className="text-center space-y-3 pb-6">
             <div className="flex items-center justify-center gap-2">
               <Compass className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 CashCompass
               </CardTitle>
             </div>

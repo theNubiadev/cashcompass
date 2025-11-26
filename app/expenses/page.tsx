@@ -223,8 +223,8 @@ export default function ExpensesPage() {
       <Navigation />
       <Toaster position="top-right" richColors closeButton />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto p-4 md:p-6 space-y-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">
+        <div className="container mx-auto p-4 md:p-6 space-y-6 pt-24 md:pt-6">
           {/* Header */}
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Receipt, Target, BarChart3, Compass, LogIn, UserPlus, LogOut } from 'lucide-react';
+import { LayoutDashboard, Receipt, Target, BarChart3, Compass, LogIn, UserPlus, LogOut, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/expenses', label: 'Expenses', icon: Receipt },
   { href: '/budgets', label: 'Budgets', icon: Target },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/ai', label: 'AI Assistant', icon: Sparkles },
 ];
 
 type User = { id: string; firstName: string; lastName: string; email: string } | null;
@@ -111,6 +112,16 @@ export function Navigation() {
               </>
             ) : (
               <>
+                {/* Pricing Link - Only show when not logged in */}
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                >
+                  <Link href="/pricing">Pricing</Link>
+                </Button>
+
                 {/* Auth Buttons - Only show when not logged in */}
                 <Button
                   asChild

@@ -118,7 +118,7 @@ export default function Home() {
 
         {/* Features Grid */}
         <div id="products" className="container mx-auto px-4 pb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl text-emerald-600 font-bold text-center mb-12">
             Powerful Features to Manage Your Money
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -240,7 +240,7 @@ export default function Home() {
 
         {/* Visual Section */}
         <div className="container mx-auto px-4 pb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl text-emerald-600 font-bold text-center mb-12">
             See CashCompass in Action
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
