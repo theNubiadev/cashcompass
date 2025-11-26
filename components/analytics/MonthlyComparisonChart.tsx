@@ -1,7 +1,7 @@
 // components/analytics/MonthlyComparisonChart.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { BarChart3 } from "lucide-react";
@@ -16,7 +16,7 @@ interface MonthlyComparisonChartProps {
   data: MonthlyData[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
@@ -39,7 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function MonthlyComparisonChart({ data }: MonthlyComparisonChartProps) {
   const [isLoading, setIsLoading] = useState(true);
 
-  useState(() => {
+  useEffect(() => {
     setTimeout(() => setIsLoading(false), 1200);
   }, []);
 

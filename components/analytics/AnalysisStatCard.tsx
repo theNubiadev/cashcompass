@@ -1,7 +1,7 @@
 // components/analytics/AnalyticsStatsCards.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, DollarSign, Calendar, CreditCard, Target } from "lucide-react";
 
@@ -21,7 +21,7 @@ interface AnalyticsStatsCardsProps {
 export function AnalyticsStatsCards({ stats }: AnalyticsStatsCardsProps) {
   const [isLoading, setIsLoading] = useState(true);
 
-  useState(() => {
+  useEffect(() => {
     setTimeout(() => setIsLoading(false), 600);
   }, []);
 

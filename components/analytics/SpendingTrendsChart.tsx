@@ -1,7 +1,7 @@
 // components/analytics/SpendingTrendsChart.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ interface SpendingTrendsChartProps {
   }>;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
@@ -32,7 +32,7 @@ export function SpendingTrendsChart({ data }: SpendingTrendsChartProps) {
   const [chartType, setChartType] = useState<"line" | "area">("area");
   const [isLoading, setIsLoading] = useState(true);
 
-  useState(() => {
+  useEffect(() => {
     setTimeout(() => setIsLoading(false), 800);
   }, []);
 
