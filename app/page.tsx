@@ -11,6 +11,8 @@ import {
   Proportions,
   Receipt,
   BarChart3,
+  Check,
+  X,
 } from "lucide-react";
 import {
   Card,
@@ -42,7 +44,7 @@ export default function Home() {
               className="flex items-center gap-2 font-bold text-xl group"
             >
               <Compass className="h-7 w-7 text-emerald-600 dark:text-emerald-400 group-hover:rotate-12 transition-transform" />
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 CashCompass
               </span>
             </Link>
@@ -79,7 +81,7 @@ export default function Home() {
           <div className="text-center max-w-4xl mx-auto mb-16">
             <div className="flex items-center justify-center mb-6 gap-3">
               <Compass className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-5xl md:text-6xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 CashCompass
               </h1>
             </div>
@@ -298,7 +300,7 @@ export default function Home() {
         
         {/* CTA Section */}
         <div className="container mx-auto px-4 pb-16">
-          <Card className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white border-0 shadow-2xl">
+          <Card className="bg-linear-to-br from-emerald-600 to-teal-700 text-white border-0 shadow-2xl">
             <CardContent className="pt-6">
               <div className="text-center py-12 px-4">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -320,6 +322,166 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Pricing Section */}
+        <div className="container mx-auto px-4 py-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+              Choose the plan that fits your needs. Start free and upgrade anytime.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Starter Plan */}
+            <Card className="border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Starter
+                </CardTitle>
+                <CardDescription>Perfect for getting started</CardDescription>
+                <div className="mt-6 mb-4">
+                  <span className="text-4xl font-bold text-gray-900 dark:text-white">Free</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Forever</p>
+                </div>
+                <Link href="/auth/signup">
+                  <Button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
+                    Get Started
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">1 Budget</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">5 Expenses</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">Basic Analytics</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">CSV Export</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <X className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                    <span className="text-sm text-gray-400 dark:text-gray-500 line-through">AI Insights</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <X className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+                    <span className="text-sm text-gray-400 dark:text-gray-500 line-through">Priority Support</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Professional Plan */}
+            <Card className="border-emerald-500 dark:border-emerald-400 shadow-2xl hover:shadow-2xl transition-all ring-2 ring-emerald-500/20 relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span className="bg-linear-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-4 py-1 rounded-full">
+                  Most Popular
+                </span>
+              </div>
+              <CardHeader className="pt-8">
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Professional
+                </CardTitle>
+                <CardDescription>For serious budget managers</CardDescription>
+                <div className="mt-6 mb-4">
+                  <span className="text-4xl font-bold text-gray-900 dark:text-white">₦1,500</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">/month</p>
+                </div>
+                <Link href="/auth/signup">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg">
+                    Start Free Trial
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">5 Budgets</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">100 Expenses</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Advanced Analytics</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">AI Insights</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Receipt Upload</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Email Support</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Enterprise Plan */}
+            <Card className="border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-600 hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Enterprise
+                </CardTitle>
+                <CardDescription>Maximum power and control</CardDescription>
+                <div className="mt-6 mb-4">
+                  <span className="text-4xl font-bold text-gray-900 dark:text-white">₦3,000</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">/month</p>
+                </div>
+                <Link href="/pricing">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                    View Full Details
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">10 Budgets</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">300 Expenses</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Advanced Analytics</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">AI Insights with OCR</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">Team Collaboration</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-emerald-500" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">24/7 Priority Support</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Footer */}
