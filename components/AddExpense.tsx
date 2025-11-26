@@ -21,7 +21,7 @@ const categories = [
   "Other"
 ];
 
-export function AddExpenseModal({ open, onOpenChange }) {
+export function AddExpenseModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [formData, setFormData] = useState({
     amount: "",
     category: "",
@@ -30,11 +30,11 @@ export function AddExpenseModal({ open, onOpenChange }) {
   });
 
   // NEW: File State
-  const [file, setFile] = useState(null);   
+  const [file, setFile] = useState<File | null>(null);   
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -151,7 +151,7 @@ export function AddExpenseModal({ open, onOpenChange }) {
               id="receipt"
               type="file"
               accept="image/*,application/pdf"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
               className="cursor-pointer"
             />
             {file && (
