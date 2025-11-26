@@ -16,7 +16,7 @@ import {
   Menu,
   Compass,
   X,
-} from "lucide-react";
+} from "lucide-react";.
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -179,7 +179,7 @@ export function Sidebar() {
                     <Settings className="h-4 w-4" />
                     Settings
                   </Link>
-                  <button
+                  <Button
                     onClick={() => {
                       handleLogout();
                       setIsOpen(false);
@@ -188,7 +188,7 @@ export function Sidebar() {
                   >
                     <LogOut className="h-4 w-4" />
                     Logout
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -220,7 +220,7 @@ export function Sidebar() {
 
           {/* Bottom Info */}
           <div className="px-6 py-6 border-t border-gray-200 dark:border-gray-800">
-            <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg">
+            <div className="p-4 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg">
               <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                 💡 Pro Tip
               </p>
