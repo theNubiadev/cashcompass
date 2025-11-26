@@ -48,8 +48,8 @@ async function readBudgets(): Promise<Budget[]> {
 
 function verifyToken(token: string): { sub: string } | null {
   try {
-    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dev-secret-change-this";
-    const payload = jwt.verify(token, secret) as { sub: string };
+    const secret = process.env.JWT_SECRET;
+    const payload = jwt.verify(token, secret!) as { sub: string };
     return payload;
   } catch {
     return null;
@@ -84,8 +84,7 @@ function calculateBudgetStatus(userId: string, userBudget: Budget, expenses: Exp
     warning: percentage >= 80,
   };
 }
-
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = req.cookies.get("token")?.value;
     if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -93,7 +92,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const payload = verifyToken(token);
     if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-    const expenseId = params.id;
+    const { id } = await params;
+    const expenseId = id;
 
     if (!expenseId) {
       return NextResponse.json({ error: "Expense ID required" }, { status: 400 });
@@ -115,7 +115,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       amount: amount ? parseFloat(amount) : expenses[expenseIndex].amount,
       category: category || expenses[expenseIndex].category,
       date: date || expenses[expenseIndex].date,
-      updatedAt: new Date().toISOString(),
     };
 
     await writeExpenses(expenses);
@@ -127,7 +126,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = req.cookies.get("token")?.value;
     if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -135,7 +134,8 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const payload = verifyToken(token);
     if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
 
-    const expenseId = params.id;
+    const { id } = await params;
+    const expenseId = id;
 
     if (!expenseId) {
       return NextResponse.json({ error: "Expense ID required" }, { status: 400 });

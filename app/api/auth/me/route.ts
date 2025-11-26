@@ -30,10 +30,10 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get("token")?.value;
     if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dev-secret-change-this";
+    const secret = process.env.JWT_SECRET;
     let payload: any;
     try {
-      payload = jwt.verify(token, secret) as any;
+      payload = jwt.verify(token, secret!) as any;
     } catch (err) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }

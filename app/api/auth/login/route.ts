@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
 
         // Successful login - issue a JWT and set it as an HTTP-only cookie
         const payload = { sub: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName };
-        const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dev-secret-change-this";
-        const token = jwt.sign(payload, secret, { expiresIn: "7d" });
+        const secret = process.env.JWT_SECRET;
+        const token = jwt.sign(payload, secret!, { expiresIn: "7d" });
 
         const res = NextResponse.json({ message: "Login successful", user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email } }, { status: 200 });
         // Set cookie options: httpOnly, secure in production, sameSite lax, path=/, 7 days

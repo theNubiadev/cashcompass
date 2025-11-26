@@ -48,8 +48,8 @@ async function readBudgets(): Promise<Budget[]> {
 
 function verifyToken(token: string): { sub: string } | null {
   try {
-    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || "dev-secret-change-this";
-    const payload = jwt.verify(token, secret) as { sub: string };
+    const secret = process.env.JWT_SECRET;
+    const payload = jwt.verify(token, secret!) as { sub: string };
     return payload;
   } catch {
     return null;
