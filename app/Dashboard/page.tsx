@@ -152,6 +152,7 @@ export default function Dashboard() {
       amount: expense.amount.toString(),
       category: expense.category,
       date: expense.date,
+      receipt: null,
     });
     setIsModalOpen(true);
   };
@@ -172,8 +173,8 @@ export default function Dashboard() {
       <Navigation />
       <Toaster position="top-right" richColors closeButton />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto p-4 md:p-6 space-y-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">
+        <div className="container mx-auto p-4 md:p-6 space-y-6 pt-24 md:pt-6">
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
