@@ -16,7 +16,7 @@ import {
   Menu,
   Compass,
   X,
-} from "lucide-react";.
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
