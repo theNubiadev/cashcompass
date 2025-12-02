@@ -170,7 +170,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <Navigation />
+      {/* <Navigation /> */}
       <Toaster position="top-right" richColors closeButton />
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">
