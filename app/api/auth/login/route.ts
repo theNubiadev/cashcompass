@@ -5,14 +5,15 @@ import path from "path";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as z from "zod";
+import { supabase } from "@/lib/supabase";
 
 const loginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1),
 });
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const USERS_FILE = path.join(DATA_DIR, "users.json");
+// const DATA_DIR = path.join(process.cwd(), "data");
+// const USERS_FILE = path.join(DATA_DIR, "users.json");
 
 type User = {
     id: string;
@@ -24,14 +25,14 @@ type User = {
     createdAt?: string;
 };
 
-async function readUsers(): Promise<User[]> {
-    try {
-        const raw = await fs.readFile(USERS_FILE, "utf8");
-        return JSON.parse(raw) as User[];
-    } catch {
-        return [];
-    }
-}
+// async function readUsers(): Promise<User[]> {
+//     try {
+//         const raw = await fs.readFile(USERS_FILE, "utf8");
+//         return JSON.parse(raw) as User[];
+//     } catch {
+//         return [];
+//     }
+// }
 
 export async function POST(req: NextRequest) {
     try {
@@ -42,10 +43,16 @@ export async function POST(req: NextRequest) {
         }
 
         const { email, password } = parsed.data;
-        const users = await readUsers();
+        // const users = await readUsers();
 
-        const user = users.find((u: User) => u.email.toLowerCase() === email.toLowerCase());
-        if (!user) {
+        // const user = users.find((u: User) => u.email.toLowerCase()
+        //  === email.toLowerCase());
+        const user = await supabase.from("users").fetch({
+                email: email.toLowerCase(),
+                password: password
+            })
+        
+            if (!user) {
             return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
         }
 
