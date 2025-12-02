@@ -27,7 +27,8 @@ export function Navigation() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("/api/auth/me", { credentials: "same-origin" });
+        const res = await fetch("/api/auth/me",
+        { credentials: "same-origin" });
         if (res.ok) {
           const data = await res.json();
           console.log("Auth check data:", data);
@@ -112,15 +113,15 @@ export function Navigation() {
               </>
             ) : (
               <>
-                {/* Pricing Link - Only show when not logged in */}
+                {/* Pricing Link - Only show when not logged in
                 <Button
                   asChild
                   variant="ghost"
-                  size="sm"
+                  size= "sm"
                   className="text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                 >
                   <Link href="/pricing">Pricing</Link>
-                </Button>
+                </Button> */}
 
                 {/* Auth Buttons - Only show when not logged in */}
                 <Button

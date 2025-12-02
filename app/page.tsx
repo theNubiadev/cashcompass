@@ -27,9 +27,9 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 const navItems = [
   { href: "#product", label: "Product", icon:  Proportions},
-  { href: "/expenses", label: "About us", icon: Receipt },
-  { href: "/budgets", label: "Mission", icon: Target },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/about", label: "About us", icon: Receipt },
+  { href: "/mission", label: "Mission", icon: Target },
+  { href: "/", label: "Analytics", icon: BarChart3 },
 ];
 export default function Home() {
   const pathname = usePathname();
