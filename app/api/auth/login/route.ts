@@ -1,7 +1,5 @@
 "use server";
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as z from "zod";
@@ -12,28 +10,6 @@ const loginSchema = z.object({
     password: z.string().min(1),
 });
 
-// const DATA_DIR = path.join(process.cwd(), "data");
-// const USERS_FILE = path.join(DATA_DIR, "users.json");
-
-type User = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber?: string | null;
-    passwordHash: string;
-    createdAt?: string;
-};
-
-// async function readUsers(): Promise<User[]> {
-//     try {
-//         const raw = await fs.readFile(USERS_FILE, "utf8");
-//         return JSON.parse(raw) as User[];
-//     } catch {
-//         return [];
-//     }
-// }
-
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
@@ -43,17 +19,20 @@ export async function POST(req: NextRequest) {
         }
 
         const { email, password } = parsed.data;
-        // const users = await readUsers();
+        const { data: user, error: userRError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", email.toLowerCase())
+        .maybeSingle();
 
-        // const user = users.find((u: User) => u.email.toLowerCase()
-        //  === email.toLowerCase());
-        const user = await supabase.from("users").fetch({
-                email: email.toLowerCase(),
-                password: password
-            })
-        
+        if (userRError) {
+            console.error("Supabase fetch error:", userRError);
+            return NextResponse.json({ error: "Internal Server Error" },
+                { status: 500 });  
+         }
             if (!user) {
-            return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+                return NextResponse.json({ error: "Invalid email or password" },
+                { status: 401 });
         }
 
         const match = await bcrypt.compare(password, user.passwordHash);
