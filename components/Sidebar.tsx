@@ -9,7 +9,7 @@ import {
   Target,
   BarChart3,
   Sparkles,
-  Settings,
+  
   LogOut,
   User,
   ChevronDown,
@@ -107,7 +107,6 @@ export function Sidebar() {
           CashCompass
         </Link>
       </div>
-
       {/* Sidebar */}
       <aside
         className={`fixed left-0 top-0 h-screen w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-transform duration-300 z-30 pt-20 md:pt-0 ${
@@ -129,70 +128,6 @@ export function Sidebar() {
               </p>
             </div>
           </div>
-
-          {/* User Profile Section */}
-          {user && (
-            <div className="px-6 py-6 border-b border-gray-200 dark:border-gray-800">
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
-                    <AvatarFallback className="bg-emerald-600 text-white font-semibold">
-                      {userInitials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900 dark:text-white text-sm">
-                      {user.firstName} {user.lastName}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {user.email}
-                    </p>
-                  </div>
-                </div>
-                <ChevronDown
-                  className={`h-4 w-4 text-gray-500 transition-transform ${
-                    isProfileOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {/* Profile Dropdown */}
-              {isProfileOpen && (
-                <div className="mt-3 space-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
-                  <Link
-                    href="/settings"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <User className="h-4 w-4" />
-                    My Profile
-                  </Link>
-                  <Link
-                    href="/settings"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </Link>
-                  <Button
-                    onClick={() => {
-                      handleLogout();
-                      setIsOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2">
@@ -232,6 +167,94 @@ export function Sidebar() {
         </div>
       </aside>
 
+       {/* User Profile Section */}
+       {user && (
+            <div className="px-6 py-6 border-b border-gray-200 dark:border-gray-800">
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
+                    <AvatarFallback className="bg-emerald-600 text-white font-semibold">
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-900 dark:text-white text-sm">
+                      {user.firstName} {user.lastName}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 text-gray-500 transition-transform ${
+                    isProfileOpen ? "rotate-180" : ""
+                  }`}
+                />
+          </button>
+          
+          <div className="fle x items-center gap-3">
+            <Link
+            href="/settings"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+            <User className="h-4 w-4" />
+            My Profile
+            </Link>
+            <Link 
+              href='/settings'
+          className="flex items-center gap-3 py-2 "
+            >
+            Settings
+            </Link>
+
+            <Button
+              onClick={() => {handleLogout() }}
+            className="flex items-center gap-3 px-3 ">
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+
+          </div>
+
+              {/* Profile Dropdown
+              {isProfileOpen && (
+                <div className="mt-3 space-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                  <Link
+                    href="/settings"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    My Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </Link>
+                  <Button
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              )} */}
+            </div>
+          )}
       {/* Mobile Overlay */}
       {isOpen && (
         <div
