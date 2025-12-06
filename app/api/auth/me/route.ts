@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+// import { CookieOptions } from "@supabase/ssr";
 
 interface SafeUser {
   id: string;
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
           getAll() {
             return req.cookies.getAll();
           },
-          setAll(cookiesToSet: Array<{name: string; value: string; options?: any}>) {
+          setAll() {
             // Not needed for GET request, but required by the API
           },
         },

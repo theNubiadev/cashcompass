@@ -16,7 +16,8 @@ export async function middleware(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet:
+          Array<{ name: string; value: string; options?: any }>) {
           cookiesToSet.forEach(({ name, value }) => 
             request.cookies.set(name, value)
           )
@@ -30,9 +31,7 @@ export async function middleware(request: NextRequest) {
       },
     }
   )
-
   await supabase.auth.getUser()
-
   return response
 }
 
