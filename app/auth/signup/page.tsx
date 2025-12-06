@@ -113,7 +113,7 @@ export default function Signup() {
 
       toast.success("Account created successfully! Redirecting to sign in...");
       form.reset();
-      setTimeout(() => router.push("/auth/signin"), 5000);
+      setTimeout(() => router.push("/auth/signin"), 2000);
     } catch (error) {
       console.error("Signup error:", error);
       toast.error("Failed to create account. Please try again.");
