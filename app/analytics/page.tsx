@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Navigation } from "@/components/Navbar";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -228,7 +228,6 @@ export default function Analytics() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
     toast.success("Analytics exported successfully");
   };
 
@@ -239,7 +238,6 @@ export default function Analytics() {
 
   return (
     <>
-      <Navigation />
       <Toaster position="top-right" richColors closeButton />
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">

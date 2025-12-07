@@ -220,7 +220,7 @@ export default function ExpensesPage() {
         <div className="container mx-auto p-4 md:p-6 space-y-6 pt-24 md:pt-6">
           {/* Header */}
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-white mb-2">
               All Expenses
             </h1>
             <p className="text-gray-600 dark:text-gray-400">

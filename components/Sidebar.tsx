@@ -26,9 +26,9 @@ type UserData = {
 } | null;
 
   const navItems = [
-    { href: "/", label: "Home", icon: Home },
+    { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/expenses", label: "Expenses", icon: Receipt },
-    { href: "/budget", label: "Budget", icon: Target },
+    { href: "/budgets", label: "Budgets", icon: Target },
     { href: "/analytics", label: "Analytics", icon: BarChart4 }
 ];
   
@@ -42,7 +42,6 @@ export function Sidebar() {
   const pathname = usePathname();
   const [user, setUser] = useState<UserData>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -62,10 +61,8 @@ export function Sidebar() {
         setIsLoading(false);
       }
     };
-
     checkAuth();
   }, []);
-
   const handleLogout = async () => {
     try {
       const res = await fetch("/api/auth/logout", {
@@ -84,12 +81,10 @@ export function Sidebar() {
       toast.error("Failed to logout");
     }
   };
-
   // Don't show sidebar on auth pages
   if (!user || pathname?.startsWith("/auth") || pathname === "/onboarding") {
     return null;
   }
-
   const userInitials = user
     ? `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`.toUpperCase()
     : "U";
@@ -102,7 +97,6 @@ export function Sidebar() {
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
-
       {/* Sidebar */}
       <aside
         className={`fixed left-0 top-0 h-screen w-64 bg-gray-50 transition-transform duration-300 z-30 ${
@@ -115,9 +109,8 @@ export function Sidebar() {
             <div className="p-2 bg-emerald-600 rounded-lg">
               <Compass className="h-5 w-5 text-white" />
             </div>
-            <h1 className="font-bold text-lg text-gray-900">Cashcompass</h1>
+            <h1 className="font-bold text-lg text-emerald-600">Cashcompass</h1>
           </div>
-
 
           {/* Main Navigation - Inset Style */}
           <nav className="flex-1 space-y-1 overflow-y-auto">
@@ -132,7 +125,7 @@ export function Sidebar() {
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all group ${
                     isActive
                       ? "bg-white text-emerald-700 shadow-sm"
-                      : "text-gray-700 hover:bg-white/60"
+                      : "text-gray-700 "
                   }`}
                 >
                   <Icon className={`h-5 w-5 ${isActive ? "text-emerald-600" : "text-gray-500"}`} />
@@ -142,12 +135,11 @@ export function Sidebar() {
               );
             })}
           </nav>
-
-               {/* Secondary Navigation Section */}
+          {/* Secondary Navigation Section */}
           <div className="mt-auto pt-4 border-t border-gray-200">
             {/* Others Label */}
             <div className="px-3 py-2">
-              <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Secondary</p>
+              <p className="text-gray-500 text-xs font-semibold tracking-wider">Others</p>
             </div>
 
             {/* Secondary Navigation */}
@@ -174,19 +166,18 @@ export function Sidebar() {
               })}
             </nav>
 
-            {
-              user && (
-                 <div className="bg-white rounded-lg p-3 shadow-sm">
+            {user && (
+              <div className="bg-white rounded-lg p-3 shadow-sm">
               <button className="w-full flex items-center gap-3 group">
                     <Avatar className="h-9 w-9 flex-shrink-0">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} alt="" />
+                      <AvatarImage src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=Adrian`} alt="" />
                       <AvatarFallback className="bg-emerald-600 text-white font-semibold  text-sm ">
                         {userInitials}
                       </AvatarFallback>
                     </Avatar>
                      <div className="text-left flex-1 min-w-0">
                       <p className="font-semibold text-gray-900 text-sm truncate">{user.firstName}{ user.lastName}</p>
-                      <p className="text-xs text-gray-500 truncate">{ "johndoe@email.com"}</p>
+                      <p className="text-xs text-gray-500 truncate">{ user.email}</p>
                 </div>
                     
                     <LogOut onClick={() => handleLogout()}
@@ -194,15 +185,13 @@ export function Sidebar() {
               </button>
             </div>
               )}
-</div>
+            </div>
         </div>
-      </aside>
-
-      
+      </aside>      
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          className="fixed inset-0  bg-opacity-50 z-20 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Navigation } from "@/components/Navbar";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Sidebar } from "@/components/Sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertCircle, PlusCircle, DollarSign, Wallet, Trash2, Edit2, TrendingUp, Upload } from "lucide-react";
+import { AlertCircle, PlusCircle, DollarSign, Wallet, Trash2, Edit2, TrendingUp, Upload, LogOut, Settings, LayoutDashboard, Menu, X } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+import { me } from "@/lib/auth";
 
 const CATEGORIES = ["Groceries", "Rent", "Entertainment", "Utilities", "Transportation", "Healthcare", "Other"];
 
@@ -20,7 +22,7 @@ type Expense = {
   amount: number;
   category: string;
   date: string;
-  createdAt: string;
+  created_at: string;
 };
 
 type BudgetStatus = {
@@ -31,12 +33,21 @@ type BudgetStatus = {
 };
 
 type Budget = {
-  userId: string;
+  user_id: string;
   amount: number;
   period: "weekly" | "monthly";
 };
 
+type User = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
 export default function Dashboard() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [budgetStatus, setBudgetStatus] = useState<BudgetStatus | null>(null);
   const [budget, setBudget] = useState<Budget | null>(null);
@@ -44,18 +55,40 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
+
   // Form state
-  const [formData, setFormData] = useState({ description: "", amount: "", category: "Groceries", date: "", receipt: null as File | null });
+  const [formData, setFormData] = useState({ 
+    description: "", 
+    amount: "", 
+    category: "Groceries", 
+    date: "", 
+    receipt: null as File | null 
+  });
 
   useEffect(() => {
+    fetchUserData();
     fetchDashboardData();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const data = await me();
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      router.push("/login");
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
       const [expensesRes, budgetRes] = await Promise.all([
-        fetch("/api/expenses", { credentials: "same-origin" }),
-        fetch("/api/budget", { credentials: "same-origin" }),
+        fetch("/api/expenses", { credentials: "include" }),
+        fetch("/api/budget", { credentials: "include" }),
       ]);
 
       if (expensesRes.ok) {
@@ -96,7 +129,7 @@ export default function Dashboard() {
           category: formData.category,
           date: formData.date || new Date().toISOString().split("T")[0],
         }),
-        credentials: "same-origin",
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -104,12 +137,10 @@ export default function Dashboard() {
       if (res.ok) {
         if (editingId) {
           toast.success("Expense updated");
-          setExpenses(expenses.map((e) => (e.id === editingId ? data.expense : e)));
           await fetchDashboardData();
         } else {
           toast.success(data.warning ? `Added! ${data.warning}` : "Expense added");
-          setExpenses([data.expense, ...expenses]);
-          if (data.warning) setBudgetStatus((prev) => (prev ? { ...prev, warning: true } : null));
+          await fetchDashboardData();
         }
         resetForm();
       } else {
@@ -129,12 +160,11 @@ export default function Dashboard() {
     try {
       const res = await fetch(`/api/expenses/${id}`, {
         method: "DELETE",
-        credentials: "same-origin",
+        credentials: "include",
       });
 
       if (res.ok) {
         toast.success("Expense deleted");
-        setExpenses(expenses.filter((e) => e.id !== id));
         await fetchDashboardData();
       } else {
         toast.error("Failed to delete expense");
@@ -165,20 +195,22 @@ export default function Dashboard() {
 
   const categorySpent = CATEGORIES.map((cat) => ({
     category: cat,
-    amount: expenses.filter((e) => e.category === cat).reduce((sum, e) => sum + e.amount, 0),
+    amount: expenses.filter((e) => e.category === cat).reduce((sum, e) => sum + parseFloat(e.amount.toString()), 0),
   })).filter((c) => c.amount > 0);
 
   return (
     <>
-      {/* <Navigation /> */}
       <Toaster position="top-right" richColors closeButton />
+      {/* Sidebar */}
+      <Sidebar />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">
-        <div className="container mx-auto p-4 md:p-6 space-y-6 pt-24 md:pt-6">
+      {/* Main Content */}
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 lg:ml-64">
+        <div className="container mx-auto p-4 md:p-6 space-y-6 pt-20 lg:pt-6">
           {/* Header */}
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-white mb-2">
                 Dashboard
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
@@ -202,7 +234,7 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">${budget.amount.toFixed(2)}</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">${parseFloat(budget.amount.toString()).toFixed(2)}</div>
                   <p className="text-xs text-gray-500 mt-1">{budget.period === "weekly" ? "Weekly" : "Monthly"}</p>
                 </CardContent>
               </Card>
@@ -405,7 +437,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-bold text-gray-900 dark:text-white">${expense.amount.toFixed(2)}</span>
+                        <span className="font-bold text-gray-900 dark:text-white">${parseFloat(expense.amount.toString()).toFixed(2)}</span>
                         <Button
                           size="sm"
                           variant="ghost"
