@@ -176,8 +176,8 @@ export function Sidebar() {
                       </AvatarFallback>
                     </Avatar>
                      <div className="text-left flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 text-sm truncate">{user.firstName}{ user.lastName}</p>
-                      <p className="text-xs text-gray-500 truncate">{ user.email}</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">{user.firstName} { user.lastName}</p>
+                      <p className="text-xs text-gray-500 truncate">{ user.email.split("@")[0]}</p>
                 </div>
                     
                     <LogOut onClick={() => handleLogout()}
@@ -191,7 +191,7 @@ export function Sidebar() {
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0  bg-opacity-50 z-20 md:hidden"
+          className="fixed inset-0 bg-opacity-50 z-20 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

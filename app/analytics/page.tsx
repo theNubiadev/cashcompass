@@ -286,23 +286,23 @@ export default function Analytics() {
 
           {isLoading ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">Loading analytics...</p>
+              <p className="text-emerald-600">Loading analytics...</p>
             </div>
           ) : (
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+                  <CardContent className="">
+                    <div className="flex items-center ">
+                      <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
                         <DollarSign className="h-6 w-6 text-emerald-600" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Total Spent
                         </p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white">
                           ${stats.totalSpent.toFixed(2)}
                         </p>
                       </div>
@@ -311,16 +311,16 @@ export default function Analytics() {
                 </Card>
 
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <CardContent className="">
+                    <div className="flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                         <TrendingUp className="h-6 w-6 text-blue-600" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Daily Avg
                         </p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white">
                           ${stats.averageDaily.toFixed(2)}
                         </p>
                       </div>
@@ -329,16 +329,16 @@ export default function Analytics() {
                 </Card>
 
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                  <CardContent className="">
+                    <div className="flex items-center">
+                      <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                         <Zap className="h-6 w-6 text-purple-600" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Avg Transaction
                         </p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white">
                           ${stats.averageTransaction.toFixed(2)}
                         </p>
                       </div>
@@ -347,16 +347,16 @@ export default function Analytics() {
                 </Card>
 
                 <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                  <CardContent className="">
+                    <div className="flex items-center">
+                      <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
                         <BarChart3 className="h-6 w-6 text-orange-600" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Transactions
                         </p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white">
                           {stats.transactionCount}
                         </p>
                       </div>

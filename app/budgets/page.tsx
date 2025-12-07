@@ -116,7 +116,6 @@ export default function BudgetPage() {
   })).filter((c) => c.amount > 0);
 
   const topExpenseCategories = categorySpending.sort((a, b) => b.amount - a.amount).slice(0, 5);
-
   return (
     <>
       <Toaster position="top-right" richColors closeButton />
