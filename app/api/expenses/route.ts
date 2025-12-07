@@ -1,60 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import { promises as fs } from "fs";
-import path from "path";
+import { createServerClient } from "@supabase/ssr";
+import * as z from "zod";
 
-type Expense = {
-  id: string;
-  userId: string;
-  description: string;
-  amount: number;
-  category: string;
-  date: string;
-  createdAt: string;
-};
-
-type Budget = {
-  userId: string;
-  amount: number;
-  period: "weekly" | "monthly";
-};
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const EXPENSES_FILE = path.join(DATA_DIR, "expenses.json");
-const BUDGETS_FILE = path.join(DATA_DIR, "budgets.json");
-
-async function readExpenses(): Promise<Expense[]> {
-  try {
-    const raw = await fs.readFile(EXPENSES_FILE, "utf8");
-    return JSON.parse(raw) as Expense[];
-  } catch {
-    return [];
-  }
-}
-
-async function writeExpenses(expenses: Expense[]) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(EXPENSES_FILE, JSON.stringify(expenses, null, 2), "utf8");
-}
-
-async function readBudgets(): Promise<Budget[]> {
-  try {
-    const raw = await fs.readFile(BUDGETS_FILE, "utf8");
-    return JSON.parse(raw) as Budget[];
-  } catch {
-    return [];
-  }
-}
-
-function verifyToken(token: string): { sub: string } | null {
-  try {
-    const secret = process.env.JWT_SECRET;
-    const payload = jwt.verify(token, secret!) as { sub: string };
-    return payload;
-  } catch {
-    return null;
-  }
-}
+const expenseSchema = z.object({
+  description: z.string().min(1),
+  amount: z.number().positive(),
+  category: z.string().min(1),
+  date: z.string().optional(),
+});
 
 function getPeriodStart(period: "weekly" | "monthly"): Date {
   const now = new Date();
@@ -70,90 +23,184 @@ function getPeriodStart(period: "weekly" | "monthly"): Date {
   }
 }
 
-function calculateBudgetStatus(userId: string, userBudget: Budget, expenses: Expense[]): { spent: number; remaining: number; percentage: number; warning: boolean } {
-  const periodStart = getPeriodStart(userBudget.period);
-  const periodExpenses = expenses.filter((e) => e.userId === userId && new Date(e.date) >= periodStart);
-  const spent = periodExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const remaining = userBudget.amount - spent;
-  const percentage = (spent / userBudget.amount) * 100;
-
-  return {
-    spent,
-    remaining,
-    percentage,
-    warning: percentage >= 80,
-  };
-}
-
+// GET - Fetch user's expenses and budget status
 export async function GET(req: NextRequest) {
   try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return req.cookies.getAll();
+          },
+          setAll() {
+            // Not needed for GET request
+          },
+        },
+      }
+    );
 
-    const payload = verifyToken(token);
-    if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    const expenses = await readExpenses();
-    const userExpenses = expenses.filter((e) => e.userId === payload.sub);
-
-    const budgets = await readBudgets();
-    const userBudget = budgets.find((b) => b.userId === payload.sub);
-
-    let budgetStatus = null;
-    if (userBudget) {
-      budgetStatus = calculateBudgetStatus(payload.sub, userBudget, expenses);
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
     }
 
-    return NextResponse.json({ expenses: userExpenses, budgetStatus }, { status: 200 });
+    // Fetch user's expenses
+    const { data: expenses, error: expensesError } = await supabase
+      .from("expenses")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", { ascending: false });
+
+    if (expensesError) {
+      console.error("Expenses fetch error:", expensesError);
+      return NextResponse.json(
+        { error: "Failed to fetch expenses" },
+        { status: 500 }
+      );
+    }
+
+    // Fetch user's budget
+    const { data: budget } = await supabase
+      .from("budgets")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    let budgetStatus = null;
+    if (budget && expenses) {
+      const periodStart = getPeriodStart(budget.period);
+      const periodExpenses = expenses.filter(
+        (e) => new Date(e.date) >= periodStart
+      );
+      const spent = periodExpenses.reduce((sum, e) => sum + parseFloat(e.amount.toString()), 0);
+      const remaining = budget.amount - spent;
+      const percentage = (spent / budget.amount) * 100;
+
+      budgetStatus = {
+        spent,
+        remaining,
+        percentage,
+        warning: percentage >= 80,
+      };
+    }
+
+    return NextResponse.json(
+      { expenses: expenses || [], budgetStatus },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("/api/expenses GET error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
+// POST - Create a new expense
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-
-    const payload = verifyToken(token);
-    if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-
     const body = await req.json();
-    const { description, amount, category, date } = body;
 
-    if (!description || !amount || !category) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // Validate input
+    const parsed = expenseSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid input", details: parsed.error.format() },
+        { status: 400 }
+      );
     }
 
-    const expenses = await readExpenses();
-    const newExpense: Expense = {
-      id: Date.now().toString(),
-      userId: payload.sub,
-      description,
-      amount: parseFloat(amount),
-      category,
-      date: date || new Date().toISOString().split("T")[0],
-      createdAt: new Date().toISOString(),
-    };
+    const { description, amount, category, date } = parsed.data;
 
-    expenses.push(newExpense);
-    await writeExpenses(expenses);
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return req.cookies.getAll();
+          },
+          setAll() {
+            // Cookies handled by middleware
+          },
+        },
+      }
+    );
+
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    // Create new expense
+    const { data: newExpense, error: insertError } = await supabase
+      .from("expenses")
+      .insert({
+        user_id: user.id,
+        description,
+        amount,
+        category,
+        date: date || new Date().toISOString().split("T")[0],
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error("Expense insert error:", insertError);
+      return NextResponse.json(
+        { error: "Failed to create expense" },
+        { status: 500 }
+      );
+    }
 
     // Check budget status for warnings
-    const budgets = await readBudgets();
-    const userBudget = budgets.find((b) => b.userId === payload.sub);
-    let warning = null;
-    if (userBudget) {
-      const status = calculateBudgetStatus(payload.sub, userBudget, expenses);
-      if (status.warning) {
-        warning = `You've spent ${status.percentage.toFixed(0)}% of your ${userBudget.period} budget`;
+    const { data: budget } = await supabase
+      .from("budgets")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    let warning: string | null = null;
+    if (budget) {
+      const periodStart = getPeriodStart(budget.period);
+      const { data: expenses } = await supabase
+        .from("expenses")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("date", periodStart.toISOString().split("T")[0]);
+
+      if (expenses) {
+        const spent = expenses.reduce((sum, e) => sum + parseFloat(e.amount.toString()), 0);
+        const percentage = (spent / budget.amount) * 100;
+
+        if (percentage >= 80) {
+          warning = `You've spent ${percentage.toFixed(0)}% of your ${budget.period} budget`;
+        }
       }
     }
 
-    return NextResponse.json({ expense: newExpense, warning }, { status: 201 });
+    return NextResponse.json(
+      { expense: newExpense, warning },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("/api/expenses POST error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

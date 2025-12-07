@@ -1,98 +1,168 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import { promises as fs } from "fs";
-import path from "path";
+import { createServerClient } from "@supabase/ssr";
+import * as z from "zod";
 
-type Budget = {
-  userId: string;
-  amount: number;
-  period: "weekly" | "monthly";
-  createdAt: string;
-  updatedAt: string;
-};
+const budgetSchema = z.object({
+  amount: z.number().positive(),
+  period: z.enum(["weekly", "monthly"]),
+});
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const BUDGETS_FILE = path.join(DATA_DIR, "budgets.json");
-
-async function readBudgets(): Promise<Budget[]> {
-  try {
-    const raw = await fs.readFile(BUDGETS_FILE, "utf8");
-    return JSON.parse(raw) as Budget[];
-  } catch {
-    return [];
-  }
-}
-
-async function writeBudgets(budgets: Budget[]) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(BUDGETS_FILE, JSON.stringify(budgets, null, 2), "utf8");
-}
-
-function verifyToken(token: string): { sub: string } | null {
-  try {
-    const secret = process.env.JWT_SECRET ;
-    const payload = jwt.verify(token, secret!) as { sub: string };
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
+// GET - Fetch user's budget
 export async function GET(req: NextRequest) {
   try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return req.cookies.getAll();
+          },
+          setAll() {
+            // Not needed for GET request
+          },
+        },
+      }
+    );
 
-    const payload = verifyToken(token);
-    if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    const budgets = await readBudgets();
-    const userBudget = budgets.find((b) => b.userId === payload.sub);
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
 
-    return NextResponse.json({ budget: userBudget || null }, { status: 200 });
+    // Fetch user's budget
+    const { data: budget, error: budgetError } = await supabase
+      .from("budgets")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (budgetError) {
+      console.error("Budget fetch error:", budgetError);
+      return NextResponse.json(
+        { error: "Failed to fetch budget" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ budget }, { status: 200 });
   } catch (error) {
     console.error("/api/budget GET error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
+// POST - Create or update user's budget
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get("token")?.value;
-    if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-
-    const payload = verifyToken(token);
-    if (!payload) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-
     const body = await req.json();
-    const { amount, period } = body;
 
-    if (!amount || !period || !["weekly", "monthly"].includes(period)) {
-      return NextResponse.json({ error: "Invalid amount or period" }, { status: 400 });
+    // Validate input
+    const parsed = budgetSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid input", details: parsed.error.format() },
+        { status: 400 }
+      );
     }
 
-    const budgets = await readBudgets();
-    const existingIndex = budgets.findIndex((b) => b.userId === payload.sub);
+    const { amount, period } = parsed.data;
 
-    const now = new Date().toISOString();
-    const newBudget: Budget = { 
-      userId: payload.sub, 
-      amount: parseFloat(amount), 
-      period, 
-      createdAt: existingIndex === -1 ? now : budgets[existingIndex].createdAt, 
-      updatedAt: now 
-    };
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return req.cookies.getAll();
+          },
+          setAll() {
+            // Not needed for POST
+          },
+        },
+      }
+    );
 
-    if (existingIndex === -1) {
-      budgets.push(newBudget);
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    // Check if budget already exists
+    const { data: existingBudget } = await supabase
+      .from("budgets")
+      .select("id, created_at")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existingBudget) {
+      // Update existing budget
+      const { data: updatedBudget, error: updateError } = await supabase
+        .from("budgets")
+        .update({
+          amount,
+          period,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error("Budget update error:", updateError);
+        return NextResponse.json(
+          { error: "Failed to update budget" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        { budget: updatedBudget, message: "Budget updated successfully" },
+        { status: 200 }
+      );
     } else {
-      budgets[existingIndex] = newBudget;
-    }
+      // Create new budget
+      const { data: newBudget, error: insertError } = await supabase
+        .from("budgets")
+        .insert({
+          user_id: user.id,
+          amount,
+          period,
+        })
+        .select()
+        .single();
 
-    await writeBudgets(budgets);
-    return NextResponse.json({ budget: newBudget }, { status: 201 });
+      if (insertError) {
+        console.error("Budget insert error:", insertError);
+        return NextResponse.json(
+          { error: "Failed to create budget" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        { budget: newBudget, message: "Budget created successfully" },
+        { status: 201 }
+      );
+    }
   } catch (error) {
     console.error("/api/budget POST error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
