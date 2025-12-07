@@ -1,6 +1,5 @@
 "use client";
 
-import { Navigation } from "@/components/Navbar";
 import { useState, useEffect } from "react";
 import {
   Table,
@@ -124,18 +123,15 @@ export default function ExpensesPage() {
 
   useEffect(() => {
     applyFiltersAndSort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expenses, searchQuery, filterCategory, sortBy]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this expense?")) return;
-
     try {
       const res = await fetch(`/api/expenses/${id}`, {
         method: "DELETE",
         credentials: "same-origin",
       });
-
       if (res.ok) {
         toast.success("Expense deleted");
         setExpenses(expenses.filter((e) => e.id !== id));
@@ -215,15 +211,12 @@ export default function ExpensesPage() {
 
     toast.success("Expenses exported to JSON");
   };
-
   const totalAmount = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
-
   return (
     <>
-      <Navigation />
+      {/* <Navigation /> */}
       <Toaster position="top-right" richColors closeButton />
-
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 md:ml-64">
         <div className="container mx-auto p-4 md:p-6 space-y-6 pt-24 md:pt-6">
           {/* Header */}
           <div>
@@ -234,7 +227,6 @@ export default function ExpensesPage() {
               View and manage all your expenses in one place
             </p>
           </div>
-
           {/* Filters & Export */}
           <Card>
             <CardHeader>

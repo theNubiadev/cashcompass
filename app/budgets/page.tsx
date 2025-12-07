@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Navigation } from "@/components/Navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -120,7 +119,6 @@ export default function BudgetPage() {
 
   return (
     <>
-      <Navigation />
       <Toaster position="top-right" richColors closeButton />
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 md:ml-64">
