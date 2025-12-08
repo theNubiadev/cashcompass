@@ -82,8 +82,8 @@ Email: demo@cashcompass.com
 Password: Demo123!
 ```
 
-### Demo Video
-📹 [Watch Demo Video](https://youtu.be/your-demo-video)
+<!-- ### Demo Video -->
+<!-- 📹 [Watch Demo Video](https://youtu.be/your-demo-video) -->
 
 ---
 
@@ -95,7 +95,7 @@ Password: Demo123!
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Charts**: [Recharts](https://recharts.org/)
-- **Notifications**: [React Hot Toast](https://react-hot-toast.com/)
+- **Notifications**: [Shadcn Sonner](https://react-hot-toast.com/)
 
 ### Backend
 - **Runtime**: Node.js
@@ -104,12 +104,12 @@ Password: Demo123!
 - **Validation**: [Zod](https://zod.dev/)
 
 ### Database
-- **Database**: [MongoDB](https://www.mongodb.com/)
-- **ODM**: [Mongoose](https://mongoosejs.com/)
+- **Database**: [Supabase](https://www.mongodb.com/)
+<!-- - **ODM**: [Mongoose](https://mongoosejs.com/) -->
 
 ### Utilities
 - **Date Handling**: [date-fns](https://date-fns.org/)
-- **Password Hashing**: bcryptjs
+<!-- - **Password Hashing**: bcryptjs -->
 - **HTTP Client**: Fetch API
 
 ---
@@ -118,14 +118,14 @@ Password: Demo123!
 
 ### Prerequisites
 - Node.js 18.x or higher
-- MongoDB instance (local or MongoDB Atlas)
+<!-- - MongoDB instance (local or MongoDB Atlas) -->
 - npm or yarn package manager
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/cashcompass.git
+git clone https://github.com/thenubiadev/cashcompass.git
 cd cashcompass
 ```
 
@@ -188,7 +188,8 @@ cashcompass/
 ├── app/
 │   ├── api/
 │   │   ├── auth/
-│   │   │   └── [...nextauth]/
+│   │   │   └── [...login/
+|   |   |    |__[...register/
 │   │   │       └── route.js
 │   │   ├── expenses/
 │   │   │   ├── route.js
@@ -419,8 +420,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Your Name**
 - Portfolio: [yourportfolio.com](https://yourportfolio.com)
 - LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-- GitHub: [@yourusername](https://github.com/thenubiadev)
+- Email: aj@.com
+- GitHub: [@thenubiadev](https://github.com/thenubiadev)
 
 **Project Link**: [https://github.com/thenubiadev/cashcompass](https://github.com/yourusername/cashcompass)
 
